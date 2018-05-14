@@ -1,0 +1,5 @@
+#include "bdrzewa-pre.c"
+#include "bdrzewa-impl1.c"
+#include "bdrzewa-impl2.c"
+#include "bdrzewa-traversalstru.c"
+#include "bdrzewa-post.c"
