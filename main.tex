@@ -7,20 +7,27 @@
 %
 \mode<presentation>
 {
-  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
-  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usetheme{Warsaw}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
   \usefonttheme{default}  % or try serif, structurebold, ...
   \setbeamertemplate{navigation symbols}{}
   \setbeamertemplate{caption}[numbered]
 } 
 
-\usepackage[english]{babel}
+\usepackage[polish]{babel}
 \usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{minted}
 
-\title[Your Short Title]{Your Presentation}
-\author{You}
-\institute{Where You're From}
-\date{Date of Presentation}
+\title[Metody drzew czerwono-czarnych oraz drzew AVL]{Równoważenie binarnych drzew przeszukiwania \\ metodą drzew czerwono-czarnych\\ oraz metodą drzew AVL}
+\author[Michał K. Feiler]{Michał Krzysztof Feiler}
+\date{Algorytmy i Struktury Danych gr. LJ*, 14 maja 2018 roku}
+
+\newcommand\textdoubleplus{+\kern-1.3ex+\kern0.8ex}
+\newcommand\doubleplus{\ensuremath{\mathbin{+\mkern-10mu+}}}
 
 \begin{document}
 
@@ -28,67 +35,312 @@
   \titlepage
 \end{frame}
 
-% Uncomment these lines for an automatically generated outline.
-%\begin{frame}{Outline}
-%  \tableofcontents
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{Wstęp}
+
+\subsection{Problem tablic asocjatywnych uporządkowanych}
+
+\begin{frame}{Wstęp --- problem tablic asocjatywnych uporządkowanych}
+	Problem implementacji tablic asocjatywnych, a więc, optymalnej struktury danych dla
+    zbioru wartości typu $V$, mając funkcję klucza
+    $k : V \rightarrow K$ (różnowartościową lub nie (wielozbiór kluczy)), 
+    gdzie $K$ jest pewnym typem klucza, pod kątem
+    efektywnego znajdowania wartości po kluczu, 
+    tzn. po odpowiadającej im wartości funkcji $k$.
+    
+    \vspace{0.25cm}
+    
+    Problem implementacji tablic asocjatywnych uporządkowanych, a więc rozszerzenie
+    problemu tablicowania o zagadnienie optymalizacji pod kątem odwiedzania
+    elementów w porządku, mając dodatkowo relację porządku liniowego $\leq$ na $K$ —
+    która gdy złożona z $k$ tworzy relację na $V$:
+    \begin{itemize}
+    \item spójnego praporządku $\lesssim$ ~ 
+    (przechodnią, spójną, i zwrotną) ~ 
+    ($k$ nie musi być injekcją, jest multizbiór kluczy),
+    \item która, jeśli $k$ injekcją, jest również porządkiem liniowym 
+    (dodatkowo słabo antysymetryczną) ~ (tylko zbiór kluczy).
+    \end{itemize}
+\end{frame}
+\subsection{Problem implementacji typu zbiorowego i wielozbiorowego}
+\begin{frame}{Wstęp --- problem impl. typu zbiorowego i wielozbiorowego}
+Problem implementacji typu zbiorowego lub multizbiorowego uporządkowanego,
+a więc, optymalnej struktury danych dla zbioru wartości typu $V$,
+mając relację spójnego praporządku $\lesssim$ na $V$ ~\\ (przechodnią, spójną i zwrotną) ~ \\
+(w przypadku typu zbiorowego, 
+$\lesssim$ jest również porządkiem liniowym\\ --- dodatkowo słabo antysymetryczną ---),\\
+pod kątem odwiedzania elementów w porządku ~\\
+(a także, w przypadku typu zbiorowego, efektywnego pomijania duplikatów przy dodawaniu
+wartości do struktury).
+
+Jeżeli mamy też pewną funkcję $k : V \rightarrow K$, gdzie $K$ jest pewnym typem
+na którym mamy określony pewien porządek liniowy $\leq$, \\
+który złożony z $k$ jest równoważny $\lesssim$,
+problem można sprowadzić do problemu implementacji tablic asocjatywnych uporządkowanych.
+\end{frame}
+
+\subsection{Drzewa przeszukiwania}
+
+\begin{frame}{Wstęp --- drzewa przeszukiwania}
+Drzewa przeszukiwania są jednym z rozwiązań 
+problemu implementacji tablic asocjatywnych uporządkowanych
+lub typów (wielo)zbiorowych.
+
+\vspace{0.3cm}
+Są to struktury--drzewa \\
+z parametryzacją rozmieszczenia poziomego (uporządkowane),
+\begin{itemize}
+\item która jest unikalna na zbiorze poddrzew danego węzła, 
+\item dla której wartości ustalona spójna relacja porządku
+implikuje relację $\lesssim$ zarówno dla wierzchołków poddrzew
+po odpowiednich stronach jak i dla pozostałych wartości w danym węźle
+(czyli relację $\leq$ dla kluczy).
+\end{itemize}
+\end{frame}
+
+\subsection{Binarne drzewa przeszukiwania}
+
+\begin{frame}{Wstęp --- binarne drzewa przeszukiwania}
+Najprostszą odmianą drzew przeszukiwania są binarne drzewa przeszukiwania (BST).
+Są to drzewa przeszukiwania, w których
+\begin{itemize}
+\item węzły drzewa zawierają tylko jedną wartość,
+\item mają każdy od zera do dwóch poddrzew, 
+\item ich parametryzacja rozmieszczenia poziomego jest 
+\begin{itemize}
+\normalsize
+\item dwuwartościowa (boolowska)
+\item o wartości spełniającej implikację zachodzenia relacji $\lesssim$ między wartościami
+danego węzła a wierzchołka danego jego poddrzewa
+\begin{itemize}
+\normalsize
+\item jeżeli $\lesssim$ jest porządkiem liniowym to równej zachodzeniu relacji $\lesssim$,\\
+\item wówczas również, przez przechodniość tej relacji, zachodzeniu relacji $\lesssim$
+również z pozostałym poddrzewem,
+jeżeli są dwa pod danym węzłem.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\subsubsection{Działania na BST}
+
+\begin{frame}{Działania na BST --- struktury algebraiczne}
+\begin{flushleft}
+\begin{flalign*}
+\shortintertext{Przedstawmy drzewo BST jako typ algebraiczny}
+\texttt{class}&~\textit{POrd}~K~\texttt{where} ~ ~
+ (\leq) : K \rightarrow K \rightarrow \textit{Bool}&\\
+\texttt{class}&~\textit{TPreOrd}~V~\texttt{where} ~ ~
+ (\lesssim) : V \rightarrow V \rightarrow \textit{Bool}\\
+\texttt{class}&~(\textit{TPreOrd}~V, \textit{POrd}~K)\Rightarrow
+\textit{NodeVal}~V~K~\texttt{where} ~
+ k : V \rightarrow K\\
+\end{flalign*}
+\begin{flalign*}
+&\texttt{type}~\textit{TwoSub}~V~K=(\textit{Maybe}~(\textit{Node}~V~K)~,~\textit{Maybe}~(\textit{Node}~V~K))&\\
+&\texttt{data}~\textit{Node}~V~K~\texttt{where}&\\
+& ~ ~ ~ \textit{Node} : (\textit{NodeVal}~V~K) \Rightarrow 
+V \rightarrow \textit{TwoSub}~V~K \rightarrow \textit{Node}~V~K \\
+\end{flalign*}
+\end{flushleft}
+\end{frame}
+
+\begin{frame}{Działania na BST --- znajdowanie po kluczu oraz traversal}
+\begin{flalign*}
+&\textit{get}:(\textit{Eq}~K)\Rightarrow\textit{Maybe}~(\textit{Node}~V~K)
+\rightarrow K\rightarrow [V]&\\
+&\textit{get}~\textit{Nothing}~\_=[]&\\
+&\textit{get}~(\textit{Just}~(\textit{Node}~t~(l,p)))~x=&\\
+& ~ ~ ~ [t ~|~ k~t == x] \doubleplus 
+(\textit{get}~ ~(\texttt{if}~x\leq k~t~ ~\texttt{then}~l~ ~\texttt{else}~p)~ ~x)&\\
+&\textit{list}:\textit{Maybe}~(\textit{Node}~V~K)\rightarrow[V]&\\
+&\textit{list}~\textit{Nothing}=[]&\\
+&\textit{list}~(\textit{Just}~(\textit{Node}~t~(l,p))= \textit{list}~l \doubleplus [t]
+\doubleplus \textit{list}~p &\\
+\end{flalign*}
+\end{frame}
+
+\begin{frame}{Działania na BST --- wstawianie}
+\begin{flalign*}
+\textit{insert}&:(\textit{NodeVal}~V~K)\Rightarrow\textit{Maybe}~(\textit{Node}~V~K)
+\rightarrow v\rightarrow\textit{Node}~V~K\\
+\textit{insert}&~\textit{Nothing}~x=\textit{Node}~x~(\textit{Nothing},\textit{Nothing})\\
+\textit{insert}&~(\textit{Just}~ ~(\textit{Node}~t~(l,p)))~x\\
+\texttt{{-}{-}}~&|~ ~ ~x\lesssim t ~ \land ~ t\lesssim x ~=\textit{Node}~t~(l,p)~ ~ ~
+\texttt{{-}{-}}~\text{el. duplikatów}\\
+ &|~ ~ ~x\lesssim t ~=\textit{Node}~t~(\textit{Just}~(\textit{insert}~l~x)~,~p)\\
+ &|~ ~ ~\texttt{otherwise} ~=\textit{Node}~t~(l,~\textit{Just}~(\textit{insert}~p~x))
+\end{flalign*}
+\end{frame}
+
+\begin{frame}{Działania na BST --- \texttt{popLeftmost}}
+\begin{flalign*}
+&\texttt{type}~\textit{PopFun}~V~K=\textit{Node}~V~K\rightarrow 
+(\textit{Maybe}~(\textit{Node}~V~K)~,~V)&\\
+&\textit{popLeftmost}:\textit{PopFun}~V~K&\\
+&\textit{popLeftmost}~(\textit{Node}~t~(\textit{Nothing},p))=(p,t)&\\
+&\textit{popLeftmost}~(\textit{Node}~t~(\textit{Just}~l,~p))=&\\
+&~ ~ ~\texttt{let}~(n,v)=\textit{popLeftmost}~l~\texttt{in}~
+(\textit{Just}~(\textit{Node}~t~(l,n))~,~v)&\\
+&\textit{popRightmost}:\textit{PopFun}~V~K&\\
+&\textit{popRightmost}~(\textit{Node}~t~(l,\textit{Nothing}))=(l,t)&\\
+&\textit{popRightmost}~(\textit{Node}~t~(l,\textit{Just}~p))=&\\
+&~ ~ ~\texttt{let}~(n,v)=\textit{popRightmost}~p~\texttt{in}~
+(\textit{Just}~(\textit{Node}~t~(n,p))~,~v)&\\
+\end{flalign*}
+\end{frame}
+
+\begin{frame}{Działania na BST --- \texttt{popDeeperOneOffTop}}
+\begin{flalign*}
+&\textit{popDeeperOneOffTop}:\textit{PopFun}~V~K&\\
+&\textit{popDeeperOneOffTop}~(\textit{Node}~t~\textit{Nothing}~\textit{Nothing})=
+(\textit{Nothing}~,~t)&\\
+&\textit{popDeeperOneOffTop}~(\textit{Node}~t~l~p)=&\\
+& ~ \texttt{let}~((n_l,n_p),v)=\textit{\_popDeeperOneOff}~(l~,~p)~\texttt{in}~
+(\textit{Just}~(\textit{Node}~t~n_l~n_p))&\\
+&\textit{\_popDeeperOneOff}:\textit{TwoSub}~V~K\rightarrow (\textit{TwoSub}~V~K~,~V)&\\
+&\textit{\_popDeeperOneOff}~(
+\textit{Just}~(\textit{Node}~t_l~(o_l,l)),
+\textit{Just}~(\textit{Node}~t_p~(p,o_p))=\\
+&~ ~ ~ ~ ~ \texttt{let}~((n_l,n_p),v)=\textit{\_popDeeperOneOff}~(l,p)~
+\texttt{in}&\\
+&~ ~ ~ ~ ~ ~ ~ (\textit{Just}~(\textit{Node}~t_l~(o_l,n_l)),
+\textit{Just}~(\textit{Node}~t_p~(n_p,o_p))),v)&\\
+&\textit{\_popDeeperOneOff}~(\textit{Just}~l~,\textit{Nothing})=\\
+&~ ~ ~ ~ ~ \texttt{let}~(n,v)=\textit{popRightmost}~l~\texttt{in}~((n,\textit{Nothing}),v)&\\
+&\textit{\_popDeeperOneOff}~(\textit{Nothing},\textit{Just}~p)=\\
+&~ ~ ~ ~ ~ \texttt{let}~(n,v)=\textit{popLeftmost}~p~\texttt{in}~((\textit{Nothing},n),v)&\\
+&\textit{\_popDeeperOneOff}~...
+\end{flalign*}
+\end{frame}
+
+\begin{frame}{Działania na BST --- \textit{\_}\texttt{popDeeperOneOff}}
+\begin{flalign*}
+& ~ \texttt{let}~((n_l,n_p),v)=\textit{\_popDeeperOneOff}~(l~,~p)~\texttt{in}~
+(\textit{Just}~(\textit{Node}~t~n_l~n_p))&\\
+&\textit{\_popDeeperOneOff}:\textit{TwoSub}~V~K\rightarrow (\textit{TwoSub}~V~K~,~V)&\\
+&\textit{\_popDeeperOneOff}~(
+\textit{Just}~(\textit{Node}~t_l~(o_l,l)),
+\textit{Just}~(\textit{Node}~t_p~(p,o_p))=\\
+&~ ~ ~ ~ ~ \texttt{let}~((n_l,n_p),v)=\textit{\_popDeeperOneOff}~(l,p)~
+\texttt{in}&\\
+&~ ~ ~ ~ ~ ~ ~ (\textit{Just}~\$~\textit{Node}~t_l~(o_l,n_l),
+\textit{Just}~\$~\textit{Node}~t_p~(n_p,o_p)),v)&\\
+&\textit{\_popDeeperOneOff}~(\textit{Just}~l~,\textit{Nothing})=\\
+&~ ~ ~ ~ ~ \texttt{let}~(n,v)=\textit{popRightmost}~l~\texttt{in}~((n,\textit{Nothing}),v)&\\
+&\textit{\_popDeeperOneOff}~(\textit{Nothing},\textit{Just}~p)=\\
+&~ ~ ~ ~ ~ \texttt{let}~(n,v)=\textit{popLeftmost}~p~\texttt{in}~((\textit{Nothing},n),v)&\\
+&\textit{\_popDeeperOneOff}~(\textit{Nothing},\textit{Nothing})=\texttt{undefined}&\\
+\end{flalign*}
+\end{frame}
+
+\begin{frame}{Działania na BST --- usuwanie elementów po kluczu}
+\begin{flalign*}
+\textit{delete}&:(\textit{Eq}~K)\Rightarrow\textit{Maybe}~(\textit{Node}~V~K)
+\rightarrow K\rightarrow\textit{Maybe}~(\textit{Node}~V~K)&\\
+\textit{delete}&~\textit{Nothing}~\_ = \textit{Nothing}&\\
+\textit{delete}&~(\textit{Just}~(\textit{Node}~t~(l,p)~)~)~ ~ x&\\
+&|~ ~ ~k~t==x ~\land~ \textit{isNothing}~l ~= \textit{delete}~p~x &\\
+&|~ ~ ~k~t==x ~\land~ \textit{isNothing}~p ~= \textit{delete}~l~x &\\
+&|~ ~ ~k~t==x ~=\textit{flip delete}~x~\$~\textit{Just}~\$ &\\
+&~ ~ ~ ~ ~ ~\texttt{let}~((n_l,n_p),v) = \textit{\_popDeeperOneOff}~(l,p) &\\
+&~ ~ ~ ~ ~ ~ ~ ~\texttt{in}~\textit{Node}~v~(n_l,n_p)&\\
+\end{flalign*}
+\end{frame}
+
+\subsection{Niezrównoważone BST są nieefektywne}
+
+\begin{frame}{Niezrównoważone BST są nieefektywne}
+\begin{figure}
+\begin{tikzpicture}[level distance=10mm]
+\node [circle, draw] (a){$1$}
+	child {node [midway] (bb) {} edge from parent[draw=none]}
+	child {node [circle, draw] (b){$2$}
+    	child {node [midway] (cc) {} edge from parent[draw=none]}
+        child {node [circle, draw] (c) {$3$}
+        	child {node [midway] (dd) {} edge from parent[draw=none]}
+            child {node [circle, draw] (d) {$4$}
+            	child {node [midway] (ee) {} edge from parent[draw=none]}
+                child {node [circle, draw] (e) {$5$}}}}};
+\end{tikzpicture}
+\caption{\label{fig:sequenceunbalancedbst}
+Niezbalansowane BST sekwencji kilku kolejnych liczb nat.}
+\end{figure}
+\end{frame}
+
+\section{B-drzewa pokrótce}
+
+\subsubsection{Ogólnik}
+
+\begin{frame}{B-drzewa --- ogólnik}
+	B-drzewa (znaczenie \textit{B} jest nieustalone) są poniekąd uogólnieniem BST.
+    Są do drzewa przeszukiwania, w których
+    \begin{itemize}
+    	\item węzły zawierają od $d$ do $2d$ wartości, gdzie $d\in\mathbb{N}^+$ ustalone
+        \item jeżeli dany węzeł zawiera $n$ wartości, to ma $n+1$ poddrzew
+        \item ich parametryzacja rozmieszczenia poziomego jest
+        \begin{itemize}
+        	\item $n$-wartościowa, z ustalonym dla tych wartości ostrym porządkiem
+            liniowym $<$, przy czym dla każdych dwóch elementów zbioru wartości parametryzacji 
+            $n+1$-wartościowej wartość znajdująca się w zb. w. parametryzacji
+            $n$-wartościowej będzie zawsze w relacji $<$ z wartością która się w
+            nim nie znajduje
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{B-drzewa --- definicja wg Knutha}
+	.
+\end{frame}
+
+\begin{frame}{B-drzewa --- implementacja}
+\begin{minipage}[t]{0.48\linewidth}
+	\inputminted{c}{bdrzewa-impl1.c}
+\end{minipage}
+\begin{minipage}[t]{0.48\linewidth}
+	\inputminted{c}{bdrzewa-impl2.c}
+\end{minipage}
+\end{frame}
+
+%\vskip 1cm
+%
+%\begin{block}{Examples}
+%Some examples of commonly used commands and features are included, to help you get started.
+%\end{block}
+
+%\section{Some \LaTeX{} Examples}
+
+%\subsection{Tables and Figures}
+
+%\begin{frame}{Tables and Figures}
+
+%\begin{itemize}
+%\item Use \texttt{tabular} for basic tables --- see Table~\ref{tab:widgets}, for example.
+%\item You can upload a figure (JPEG, PNG or PDF) using the files menu. 
+%\item To include it in your document, use the \texttt{includegraphics} command (see the comment below in the source code).
+%\end{itemize}
+
+%% Commands to include a figure:
+%%\begin{figure}
+%%\includegraphics[width=\textwidth]{your-figure's-file-name}
+%%\caption{\label{fig:your-figure}Caption goes here.}
+%%\end{figure}
+
+%\begin{table}
+%\centering
+%\begin{tabular}{l|r}
+%Item & Quantity \\\hline
+%Widgets & 42 \\
+%Gadgets & 13
+%\end{tabular}
+%\caption{\label{tab:widgets}An example table.}
+%\end{table}
+
 %\end{frame}
-
-\section{Introduction}
-
-\begin{frame}{Introduction}
-
-\begin{itemize}
-  \item Your introduction goes here!
-  \item Use \texttt{itemize} to organize your main points.
-\end{itemize}
-
-\vskip 1cm
-
-\begin{block}{Examples}
-Some examples of commonly used commands and features are included, to help you get started.
-\end{block}
-
-\end{frame}
-
-\section{Some \LaTeX{} Examples}
-
-\subsection{Tables and Figures}
-
-\begin{frame}{Tables and Figures}
-
-\begin{itemize}
-\item Use \texttt{tabular} for basic tables --- see Table~\ref{tab:widgets}, for example.
-\item You can upload a figure (JPEG, PNG or PDF) using the files menu. 
-\item To include it in your document, use the \texttt{includegraphics} command (see the comment below in the source code).
-\end{itemize}
-
-% Commands to include a figure:
-%\begin{figure}
-%\includegraphics[width=\textwidth]{your-figure's-file-name}
-%\caption{\label{fig:your-figure}Caption goes here.}
-%\end{figure}
-
-\begin{table}
-\centering
-\begin{tabular}{l|r}
-Item & Quantity \\\hline
-Widgets & 42 \\
-Gadgets & 13
-\end{tabular}
-\caption{\label{tab:widgets}An example table.}
-\end{table}
-
-\end{frame}
-
-\subsection{Mathematics}
-
-\begin{frame}{Readable Mathematics}
-
-Let $X_1, X_2, \ldots, X_n$ be a sequence of independent and identically distributed random variables with $\text{E}[X_i] = \mu$ and $\text{Var}[X_i] = \sigma^2 < \infty$, and let
-$$S_n = \frac{X_1 + X_2 + \cdots + X_n}{n}
-      = \frac{1}{n}\sum_{i}^{n} X_i$$
-denote their mean. Then as $n$ approaches infinity, the random variables $\sqrt{n}(S_n - \mu)$ converge in distribution to a normal $\mathcal{N}(0, \sigma^2)$.
-
-\end{frame}
 
 \end{document}
