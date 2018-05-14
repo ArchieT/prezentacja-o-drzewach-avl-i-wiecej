@@ -2,4 +2,6 @@
 #include "bdrzewa-impl1.c"
 #include "bdrzewa-impl2.c"
 #include "bdrzewa-traversalstru.c"
+#include "bdrzewa-traverse.c"
+#include "bdrzewa-trawalk.c"
 #include "bdrzewa-post.c"

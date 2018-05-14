@@ -7,7 +7,7 @@ struct traversal walk(struct traversal t, unsigned copy) {
 	}
 	struct location l = r.loc[r.depth-1];
 	do {
-		if(l.intnode->kn>l.where) {
+		if(l.which->kn>l.where) {
 			r.loc[r.depth-1].where++;
 			break;
 		}
