@@ -20,9 +20,10 @@
 \usepackage{mathtools}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
+\usetikzlibrary{shapes}
 \usepackage{minted}
 
-\title[Metody drzew czerwono-czarnych oraz drzew AVL]{Równoważenie binarnych drzew przeszukiwania \\ metodą drzew czerwono-czarnych\\ oraz metodą drzew AVL}
+\title[Metody drzew AVL i niedokończone czerwono-czarnych]{Równoważenie binarnych drzew przeszukiwania \\ metodą drzew AVL,\\ i miało być jeszcze\\ metodą drzew wagowo zrównoważonych \\ i metodą drzew czerwono-czarnych}
 \author[Michał K. Feiler]{Michał Krzysztof Feiler}
 \date{Algorytmy i Struktury Danych gr. LJ*, 14 maja 2018 roku}
 
@@ -273,6 +274,81 @@ Niezbalansowane BST sekwencji kilku kolejnych liczb nat.}
 \end{figure}
 \end{frame}
 
+\section{Drzewa AVL}
+
+\subsection{Definicja}
+
+\begin{frame}{Drzewa AVL --- definicja}
+\begin{itemize}
+\item Drzewo AVL, od nazwisk Gieorgia Adelson-Wielskiego oraz Jewgienija Łandisa, którzy wynaleźli algorytm i opublikowali go w 1962.
+
+\item Miarą zrównoważenia drzewa jest tzw. współczynnik wyważenia drzewa, określany jako różnica wysokości prawego poddrzewa i lewego poddrzewa.
+
+\item Drzewo BST jest drzewem AVL, jeżeli współczynnik wyważenia drzewa nie jest oddalony od zera o więcej niż 1.
+
+\item Podtrzymywanie spełniania tej definicji polega na równoważeniu drzewa po każdym wstawieniu i usunięciu.
+\end{itemize}
+\end{frame}
+
+\subsection{Pojedyńcza rotacja w lewo}
+\begin{frame}{Pojedyńcza rotacja w lewo}
+\begin{itemize}
+\item gdy mamy poddrzewo, którego prawe poddrzewo jest wyższe
+\end{itemize}
+\begin{enumerate}
+\item niech $X=$ wartość wierzchołka naszego
+\item niech $Z=$ wartość wierzchołka prawego
+\item niech lewe poddrzewo naszego to będzie $a$
+\begin{tikzpicture}[level distance=4mm]
+\node [circle, draw] (xx){$X$}
+    child {node [draw=none]
+                 (aa) {$a$}}
+	child {node [circle, draw] (zz) {$Z$}
+    	child {node [draw=none]
+                     (bb) {$b$}}
+        child {node [draw=none]
+                     (cc) {$c$}}};
+\end{tikzpicture}
+\item niech lewe poddrzewo prawego to będzie $b$
+\item niech prawe poddrzewo prawego to będzie $c$
+\item to wynik pojedyńczej rotacji w lewo to będzie
+\begin{tikzpicture}[level distance=4.6mm]
+\node [circle, draw] (z){$Z$}
+	child {node [circle, draw] (x) {$X$}
+    	child {node [draw=none]
+                     (a) {$a$}}
+        child {node [draw=none]
+                     (b) {$b$}}}
+    child {node [draw=none]
+                 (c) {$c$}};
+\end{tikzpicture}
+\item \small jeżeli było AVL i zostało coś usunięte z $a$,
+i $b$ i $c$ tak samo wysokie to zapiszmy
+że teraz dla $X$ $+1$ a dla $Z$  $-1$. Otherwise oba zero.
+\end{enumerate}
+\end{frame}
+
+\subsection{Podwójna rotacja prawo-lewo}
+
+\begin{frame}{Podwójna rotacja prawo-lewo}
+\begin{itemize}
+	\item No ale mamy ddrzewo, którego prawe jest wyższe
+    \item i tego prawego poddrzewa lewe poddrzewo jest wyższe
+    \pause\vskip 0.4cm
+    \item jadąc od góry tylko obrócilibyśmy sobie sytuację
+    \pause\vskip 0.2cm
+    \item dlatego trzeba obrócić piętro niżej
+    \item i następnie obrócić nasze
+    \pause\vskip 0.4cm
+    \item teraz:
+    \begin{itemize}
+    	\item jeżeli podpod było prawo-wyższe to teraz to o wierzchołku naszego (które jest lewym pod) jest -1, a to o wierzchołku prawego pod (które jest prawego pod) jest 0
+        \item jeżeli podpod było na zero to teraz dwa ww są na zero oba
+        \item a jak było lewo-wyższe to jest odwrotnie co w prawo-wyższe i na plus a nie na minus
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
 \section{B-drzewa pokrótce}
 
 \subsubsection{Ogólnik}
@@ -295,7 +371,31 @@ Niezbalansowane BST sekwencji kilku kolejnych liczb nat.}
 \end{frame}
 
 \begin{frame}{B-drzewa --- definicja wg Knutha}
-	.
+	\begin{itemize}
+    	\item rząd B-drzewa w sensie Knutha określa się jako $2d$
+        \item dla ułatwienia nazywa się je czasem drzewami $d$-$2d$
+        \pause
+        \item termin \textit{liść} w sensie ogólnym oznacza
+        węzeł bez poddrzew, ale w sensie Knutha liście są dopiero
+        poniżej najniższych węzłów
+        \item bardziej precyzyjnie, węzłów wewnętrznych
+        (nie mylić z podwęzłami)
+        \item podwęzłami czyli poszczególnymi wartościami w węźłach
+        \vskip 0.3cm
+        \pause
+        \item wymaganie: wszystkie liście na tej samej głębokości
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{B-drzewa --- rozróżnienie liści}
+\begin{itemize}
+\item można zastosować podejście w którym z wartości nie da się
+wydobyć kluczy
+\item wówczas klucze znajdują się w węzłach wewnętrznych\\
+a wartości w liściach
+\item wówczas kluczem danej wartości jest klucz w podwęźle separującym z prawej (niejako traktuje się je razem jako wartość z wspomnianej wcześniej definicji)
+\item jeżeli to rightmost liść, to kluczem jest prawy podwęzeł separujący w węźle wyżej, itd., a w całym drzewie rightmost podwęzeł rightmost węzła ma po prawej liść \texttt{NIL}
+\end{itemize}
 \end{frame}
 
 \begin{frame}{B-drzewa --- implementacja}
@@ -315,6 +415,12 @@ Niezbalansowane BST sekwencji kilku kolejnych liczb nat.}
 \end{frame}
 \begin{frame}
 	\inputminted[tabsize=4]{c}{bdrzewa-trawalk.c}
+\end{frame}
+
+\begin{frame}{B-drzewa --- wstawianie}
+\begin{itemize}
+\item .
+\end{itemize}
 \end{frame}
 
 %\vskip 1cm
